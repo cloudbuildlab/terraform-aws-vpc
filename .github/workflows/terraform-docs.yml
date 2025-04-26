@@ -11,9 +11,3 @@ permissions:
 jobs:
   terraform-docs:
     uses: cloudbuildlab/actions-terraform-docs-generator/.github/workflows/terraform-docs.yml@v0
-    with:
-      working-dir: ./terraform
-      output-file: README.md
-      output-method: inject
-      git-push: "true"
-      git-commit-message: "docs: auto-generate terraform documentation"
