@@ -1,5 +1,8 @@
 on:
-  push:
+  workflow_run:
+    workflows: ["Generate Terraform Documentation"]
+    types:
+      - completed
     branches:
       - main
 
