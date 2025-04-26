@@ -6,7 +6,7 @@ variable "vpc_name" {
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
-  
+
   validation {
     condition     = can(cidrhost(var.vpc_cidr, 0))
     error_message = "Must be a valid IPv4 CIDR block."
@@ -16,7 +16,7 @@ variable "vpc_cidr" {
 variable "availability_zones" {
   description = "List of availability zones (including Auckland)"
   type        = list(string)
-  
+
   validation {
     condition     = length(var.availability_zones) > 0
     error_message = "At least one availability zone must be specified."
@@ -61,6 +61,11 @@ variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets (one per AZ)"
   type        = list(string)
   default     = []
+
+  validation {
+    condition     = length(var.public_subnet_cidrs) > 0 || var.enable_nat_gateway == false
+    error_message = "You must provide at least one public subnet CIDR if NAT Gateway is enabled."
+  }
 }
 
 variable "private_subnet_cidrs" {
@@ -186,4 +191,4 @@ variable "enable_ecs_endpoint" {
   description = "Whether to enable ECS VPC endpoint"
   type        = bool
   default     = false
-} 
+}
