@@ -41,7 +41,7 @@ module "vpc" {
   private_subnet_cidrs  = ["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24", "10.0.14.0/24"]
   isolated_subnet_cidrs = ["10.0.21.0/24", "10.0.22.0/24", "10.0.23.0/24", "10.0.24.0/24"]
   database_subnet_cidrs = ["10.0.31.0/24", "10.0.32.0/24", "10.0.33.0/24", "10.0.34.0/24"]
-  
+
   # NAT Gateway configuration
   enable_nat_gateway = true
   nat_gateway_type   = "single" # Options: "single" or "one_per_az"
@@ -55,7 +55,7 @@ module "vpc" {
   enable_monitoring_endpoint     = true
   enable_rds_endpoint            = false # not supported in ap-southeast-2-akl-1a
   enable_s3_endpoint             = true
-  enable_secretsmanager_endpoint = false # not supported in ap-southeast-2-akl-1a   
+  enable_secretsmanager_endpoint = false # not supported in ap-southeast-2-akl-1a
   enable_sns_endpoint            = false # not supported in ap-southeast-2-akl-1a
   enable_sqs_endpoint            = false # not supported in ap-southeast-2-akl-1a
   enable_ssm_endpoint            = true

@@ -66,4 +66,24 @@ output "database_subnet_cidrs" {
 output "nat_gateway_ips" {
   description = "List of NAT Gateway public IPs"
   value       = aws_nat_gateway.this[*].public_ip
-} 
+}
+
+output "private_route_table_ids" {
+  description = "List of private route table IDs"
+  value       = aws_route_table.private[*].id
+}
+
+output "public_route_table_ids" {
+  description = "List of public route table IDs"
+  value       = try(aws_route_table.public[*].id, [])
+}
+
+output "isolated_route_table_ids" {
+  description = "List of isolated route table IDs"
+  value       = try(aws_route_table.isolated[*].id, [])
+}
+
+output "database_route_table_ids" {
+  description = "List of database route table IDs"
+  value       = try(aws_route_table.database[*].id, [])
+}

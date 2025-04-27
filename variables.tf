@@ -57,6 +57,17 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "vpc_type" {
+  description = "Type of VPC to create. Allowed values: 'internal' (no public subnets, no NAT Gateway), 'dmz' (public subnets and NAT Gateway allowed)."
+  type        = string
+  default     = "dmz"
+
+  validation {
+    condition     = contains(["internal", "dmz"], var.vpc_type)
+    error_message = "vpc_type must be either 'internal' or 'dmz'."
+  }
+}
+
 variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets (one per AZ)"
   type        = list(string)
