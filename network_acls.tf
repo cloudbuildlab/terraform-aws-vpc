@@ -1,25 +1,15 @@
-# ===================================
-# Network ACLs
-# ===================================
+# # ===================================
+# # Network ACLs
+# # ===================================
 
-# Public Subnet Network ACL
+# # Public Subnet Network ACL
 resource "aws_network_acl" "public" {
-  count = length(var.public_subnet_cidrs) > 0 ? 1 : 0
+  count = var.enable_nacls && length(var.public_subnet_cidrs) > 0 ? 1 : 0
 
   vpc_id     = aws_vpc.this.id
   subnet_ids = aws_subnet.public[*].id
 
-  # Inbound Rules
-  ingress {
-    protocol   = "-1"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 0
-    to_port    = 0
-  }
-
-  # Outbound Rules
+  # Outbound: Allow all to anywhere
   egress {
     protocol   = "-1"
     rule_no    = 100
@@ -40,12 +30,14 @@ resource "aws_network_acl" "public" {
 
 # Private Subnet Network ACL
 resource "aws_network_acl" "private" {
-  count = length(var.private_subnet_cidrs) > 0 ? 1 : 0
+  count = var.enable_nacls && length(var.private_subnet_cidrs) > 0 ? 1 : 0
 
   vpc_id     = aws_vpc.this.id
   subnet_ids = aws_subnet.private[*].id
 
   # Inbound Rules
+
+  # Allow all traffic from within the VPC (for internal communication)
   ingress {
     protocol   = "-1"
     rule_no    = 100
@@ -55,17 +47,19 @@ resource "aws_network_acl" "private" {
     to_port    = 0
   }
 
-  # Allow ephemeral ports for return traffic
+  # Allow return traffic from NAT Gateway (ephemeral ports, all protocols)
   ingress {
-    protocol   = "tcp"
+    protocol   = "-1"
     rule_no    = 200
     action     = "allow"
     cidr_block = "0.0.0.0/0"
-    from_port  = 1024
-    to_port    = 65535
+    from_port  = 0
+    to_port    = 0
   }
 
   # Outbound Rules
+
+  # Allow all outbound traffic (for internet access via NAT Gateway)
   egress {
     protocol   = "-1"
     rule_no    = 100
@@ -84,14 +78,14 @@ resource "aws_network_acl" "private" {
   )
 }
 
-# Isolated Subnet Network ACL
+# # Isolated Subnet Network ACL
 resource "aws_network_acl" "isolated" {
-  count = length(var.isolated_subnet_cidrs) > 0 ? 1 : 0
+  count = var.enable_nacls && length(var.isolated_subnet_cidrs) > 0 ? 1 : 0
 
   vpc_id     = aws_vpc.this.id
   subnet_ids = aws_subnet.isolated[*].id
 
-  # Inbound Rules
+  # Inbound: Allow all from within the VPC
   ingress {
     protocol   = "-1"
     rule_no    = 100
@@ -101,7 +95,7 @@ resource "aws_network_acl" "isolated" {
     to_port    = 0
   }
 
-  # Outbound Rules
+  # Outbound: Allow all to within the VPC
   egress {
     protocol   = "-1"
     rule_no    = 100
@@ -120,14 +114,14 @@ resource "aws_network_acl" "isolated" {
   )
 }
 
-# Database Subnet Network ACL
+# # Database Subnet Network ACL
 resource "aws_network_acl" "database" {
-  count = length(var.database_subnet_cidrs) > 0 ? 1 : 0
+  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 ? 1 : 0
 
   vpc_id     = aws_vpc.this.id
   subnet_ids = aws_subnet.database[*].id
 
-  # Inbound Rules
+  # Inbound: Allow all from within the VPC (or restrict to app subnets as needed)
   ingress {
     protocol   = "-1"
     rule_no    = 100
@@ -137,7 +131,7 @@ resource "aws_network_acl" "database" {
     to_port    = 0
   }
 
-  # Outbound Rules
+  # Outbound: Allow all to within the VPC
   egress {
     protocol   = "-1"
     rule_no    = 100
@@ -154,4 +148,4 @@ resource "aws_network_acl" "database" {
     },
     var.tags
   )
-} 
+}

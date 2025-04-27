@@ -203,3 +203,9 @@ variable "enable_ecs_endpoint" {
   type        = bool
   default     = false
 }
+
+variable "enable_nacls" {
+  description = "Whether to create default Network ACLs for subnets. Set to false to manage NACLs outside the module."
+  type        = bool
+  default     = true
+}
