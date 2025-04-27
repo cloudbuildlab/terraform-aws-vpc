@@ -5,13 +5,13 @@ resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = var.enable_dns_support
   enable_dns_hostnames = var.enable_dns_hostnames
-  
+
   # Instance tenancy - dedicated for compliance requirements, default for cost efficiency
   instance_tenancy = var.instance_tenancy
-  
+
   # Enable IPv6 support
   assign_generated_ipv6_cidr_block = var.enable_ipv6
-  
+
   # Additional DNS settings
   enable_network_address_usage_metrics = true
 
@@ -33,7 +33,8 @@ resource "aws_internet_gateway" "this" {
 
   tags = merge(
     {
-      Name = "${var.vpc_name}-igw"
+      Name     = "${var.vpc_name}-igw"
+      VPC_Type = var.vpc_type
     },
     var.tags
   )
@@ -49,7 +50,8 @@ resource "aws_eip" "nat" {
 
   tags = merge(
     {
-      Name = "${var.vpc_name}-nat-${count.index + 1}"
+      Name     = "${var.vpc_name}-nat-${count.index + 1}"
+      VPC_Type = var.vpc_type
     },
     var.tags
   )
@@ -66,7 +68,8 @@ resource "aws_nat_gateway" "this" {
 
   tags = merge(
     {
-      Name = "${var.vpc_name}-nat-${count.index + 1}"
+      Name     = "${var.vpc_name}-nat-${count.index + 1}"
+      VPC_Type = var.vpc_type
     },
     var.tags
   )
@@ -87,8 +90,9 @@ resource "aws_subnet" "public" {
 
   tags = merge(
     {
-      Name = "${var.vpc_name}-public-${count.index + 1}"
-      Type = "public"
+      Name     = "${var.vpc_name}-public-${count.index + 1}"
+      Type     = "public"
+      VPC_Type = var.vpc_type
     },
     var.tags
   )
