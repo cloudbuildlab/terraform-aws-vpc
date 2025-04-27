@@ -76,6 +76,7 @@ No modules.
 | <a name="input_enable_kms_endpoint"></a> [enable\_kms\_endpoint](#input\_enable\_kms\_endpoint) | Whether to enable KMS VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_logs_endpoint"></a> [enable\_logs\_endpoint](#input\_enable\_logs\_endpoint) | Whether to enable CloudWatch Logs VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_monitoring_endpoint"></a> [enable\_monitoring\_endpoint](#input\_enable\_monitoring\_endpoint) | Whether to enable CloudWatch Monitoring VPC endpoint | `bool` | `false` | no |
+| <a name="input_enable_nacls"></a> [enable\_nacls](#input\_enable\_nacls) | Whether to create default Network ACLs for subnets. Set to false to manage NACLs outside the module. | `bool` | `true` | no |
 | <a name="input_enable_nat_gateway"></a> [enable\_nat\_gateway](#input\_enable\_nat\_gateway) | Whether to create NAT Gateway for private subnets | `bool` | `true` | no |
 | <a name="input_enable_rds_endpoint"></a> [enable\_rds\_endpoint](#input\_enable\_rds\_endpoint) | Whether to enable RDS VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_s3_endpoint"></a> [enable\_s3\_endpoint](#input\_enable\_s3\_endpoint) | Whether to enable S3 VPC endpoint | `bool` | `false` | no |
