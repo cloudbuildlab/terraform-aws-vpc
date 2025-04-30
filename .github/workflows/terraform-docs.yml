@@ -11,22 +11,23 @@ permissions:
 
 jobs:
   terraform-docs:
-    uses: cloudbuildlab/actions-terraform-docs-generator/.github/workflows/terraform-docs.yml@v0
-    with:
-      post_steps: |
-        - name: Configure Git
-          run: |
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-        - name: Commit and push changes
-          run: |
-            git fetch origin
-            git pull --rebase origin main
-            git add .
-            if git diff --staged --quiet; then
-              echo "No changes to commit"
-            else
-              git commit -m "docs: update auto-generated documentation"
-              git push
-            fi
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Generate Terraform Documentation
+        uses: terraform-docs/gh-actions@v1.4.1
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: "true"
+          git-commit-message: "docs: auto-generate terraform documentation"
