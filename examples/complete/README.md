@@ -47,6 +47,7 @@ This example demonstrates a complete VPC setup with all available features of th
 - IPv6: Disabled
 - DNS: Hostnames and support enabled
 - Availability Zones: ap-southeast-2a, ap-southeast-2b, ap-southeast-2c, ap-southeast-2-akl-1a
+- Route Tables: Enabled by default, can be disabled to manage route tables externally
 
 ### Subnet Configuration
 
@@ -79,9 +80,11 @@ The example provides the following outputs:
 - Availability zones used
 - VPC ARN
 - IPv6 CIDR (empty in this example)
+- Route table IDs for each subnet type (when enabled)
 
 ## Notes
 
 - This example uses the ap-southeast-2 region
 - Some VPC endpoints are disabled as they are not supported in the ap-southeast-2-akl-1a availability zone
 - The NAT Gateway is configured as "single" for cost efficiency, but can be changed to "one_per_az" for high availability
+- Route tables can be disabled by setting `enable_route_tables = false` to manage them externally
