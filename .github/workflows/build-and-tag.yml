@@ -39,16 +39,20 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
+          # Always create tag if force is true
           if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.force }}" == "true" ]; then
+            echo "Force tag creation requested"
             echo "changes=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check for actual changes
+          if git diff --quiet origin/main HEAD; then
+            echo "No changes detected"
+            echo "changes=false" >> $GITHUB_OUTPUT
           else
-            if git diff --quiet origin/main HEAD; then
-              echo "No changes detected"
-              echo "changes=false" >> $GITHUB_OUTPUT
-            else
-              echo "Changes detected"
-              echo "changes=true" >> $GITHUB_OUTPUT
-            fi
+            echo "Changes detected"
+            echo "changes=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Tag and release
