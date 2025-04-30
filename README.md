@@ -79,6 +79,7 @@ No modules.
 | <a name="input_enable_nacls"></a> [enable\_nacls](#input\_enable\_nacls) | Whether to create default Network ACLs for subnets. Set to false to manage NACLs outside the module. | `bool` | `true` | no |
 | <a name="input_enable_nat_gateway"></a> [enable\_nat\_gateway](#input\_enable\_nat\_gateway) | Whether to create NAT Gateway for private subnets | `bool` | `true` | no |
 | <a name="input_enable_rds_endpoint"></a> [enable\_rds\_endpoint](#input\_enable\_rds\_endpoint) | Whether to enable RDS VPC endpoint | `bool` | `false` | no |
+| <a name="input_enable_route_tables"></a> [enable\_route\_tables](#input\_enable\_route\_tables) | Whether to create and configure route tables for subnets | `bool` | `true` | no |
 | <a name="input_enable_s3_endpoint"></a> [enable\_s3\_endpoint](#input\_enable\_s3\_endpoint) | Whether to enable S3 VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_secretsmanager_endpoint"></a> [enable\_secretsmanager\_endpoint](#input\_enable\_secretsmanager\_endpoint) | Whether to enable Secrets Manager VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_sns_endpoint"></a> [enable\_sns\_endpoint](#input\_enable\_sns\_endpoint) | Whether to enable SNS VPC endpoint | `bool` | `false` | no |
