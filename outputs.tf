@@ -87,3 +87,71 @@ output "database_route_table_ids" {
   description = "List of database route table IDs"
   value       = var.enable_route_tables ? try(aws_route_table.database[*].id, []) : []
 }
+
+output "nat_gateway_ids" {
+  description = "List of NAT Gateway IDs"
+  value       = aws_nat_gateway.this[*].id
+}
+
+output "nat_gateway_private_ips" {
+  description = "List of NAT Gateway private IPs"
+  value       = aws_nat_gateway.this[*].private_ip
+}
+
+output "internet_gateway_id" {
+  description = "The ID of the Internet Gateway"
+  value       = try(aws_internet_gateway.this[0].id, null)
+}
+
+output "vpc_endpoint_ids" {
+  description = "Map of VPC endpoint IDs by service name"
+  value = {
+    s3             = try(aws_vpc_endpoint.s3[0].id, null)
+    rds            = try(aws_vpc_endpoint.rds[0].id, null)
+    logs           = try(aws_vpc_endpoint.logs[0].id, null)
+    monitoring     = try(aws_vpc_endpoint.monitoring[0].id, null)
+    ssm            = try(aws_vpc_endpoint.ssm[0].id, null)
+    sqs            = try(aws_vpc_endpoint.sqs[0].id, null)
+    sns            = try(aws_vpc_endpoint.sns[0].id, null)
+    secretsmanager = try(aws_vpc_endpoint.secretsmanager[0].id, null)
+    ecr_api        = try(aws_vpc_endpoint.ecr_api[0].id, null)
+    ecr_dkr        = try(aws_vpc_endpoint.ecr_dkr[0].id, null)
+    kms            = try(aws_vpc_endpoint.kms[0].id, null)
+    ecs            = try(aws_vpc_endpoint.ecs[0].id, null)
+  }
+}
+
+output "vpc_endpoint_dns_entries" {
+  description = "Map of VPC endpoint DNS entries by service name"
+  value = {
+    s3             = try(aws_vpc_endpoint.s3[0].dns_entry, null)
+    rds            = try(aws_vpc_endpoint.rds[0].dns_entry, null)
+    logs           = try(aws_vpc_endpoint.logs[0].dns_entry, null)
+    monitoring     = try(aws_vpc_endpoint.monitoring[0].dns_entry, null)
+    ssm            = try(aws_vpc_endpoint.ssm[0].dns_entry, null)
+    sqs            = try(aws_vpc_endpoint.sqs[0].dns_entry, null)
+    sns            = try(aws_vpc_endpoint.sns[0].dns_entry, null)
+    secretsmanager = try(aws_vpc_endpoint.secretsmanager[0].dns_entry, null)
+    ecr_api        = try(aws_vpc_endpoint.ecr_api[0].dns_entry, null)
+    ecr_dkr        = try(aws_vpc_endpoint.ecr_dkr[0].dns_entry, null)
+    kms            = try(aws_vpc_endpoint.kms[0].dns_entry, null)
+    ecs            = try(aws_vpc_endpoint.ecs[0].dns_entry, null)
+  }
+}
+
+output "vpc_endpoint_network_interface_ids" {
+  description = "Map of VPC endpoint network interface IDs by service name"
+  value = {
+    rds            = try(aws_vpc_endpoint.rds[0].network_interface_ids, [])
+    logs           = try(aws_vpc_endpoint.logs[0].network_interface_ids, [])
+    monitoring     = try(aws_vpc_endpoint.monitoring[0].network_interface_ids, [])
+    ssm            = try(aws_vpc_endpoint.ssm[0].network_interface_ids, [])
+    sqs            = try(aws_vpc_endpoint.sqs[0].network_interface_ids, [])
+    sns            = try(aws_vpc_endpoint.sns[0].network_interface_ids, [])
+    secretsmanager = try(aws_vpc_endpoint.secretsmanager[0].network_interface_ids, [])
+    ecr_api        = try(aws_vpc_endpoint.ecr_api[0].network_interface_ids, [])
+    ecr_dkr        = try(aws_vpc_endpoint.ecr_dkr[0].network_interface_ids, [])
+    kms            = try(aws_vpc_endpoint.kms[0].network_interface_ids, [])
+    ecs            = try(aws_vpc_endpoint.ecs[0].network_interface_ids, [])
+  }
+}
