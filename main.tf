@@ -102,7 +102,7 @@ resource "aws_subnet" "public" {
 # Public Route Tables
 # ===================================
 resource "aws_route_table" "public" {
-  count = length(var.public_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.public_subnet_cidrs) : 0
 
   vpc_id = aws_vpc.this.id
 
@@ -125,7 +125,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = length(var.public_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.public_subnet_cidrs) : 0
 
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public[count.index].id
@@ -154,7 +154,7 @@ resource "aws_subnet" "private" {
 # Private Route Tables
 # ===================================
 resource "aws_route_table" "private" {
-  count = length(var.private_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.private_subnet_cidrs) : 0
 
   vpc_id = aws_vpc.this.id
 
@@ -177,7 +177,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  count = length(var.private_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.private_subnet_cidrs) : 0
 
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
@@ -206,7 +206,7 @@ resource "aws_subnet" "isolated" {
 # Isolated Route Tables
 # ===================================
 resource "aws_route_table" "isolated" {
-  count = length(var.isolated_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.isolated_subnet_cidrs) : 0
 
   vpc_id = aws_vpc.this.id
 
@@ -221,7 +221,7 @@ resource "aws_route_table" "isolated" {
 }
 
 resource "aws_route_table_association" "isolated" {
-  count = length(var.isolated_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.isolated_subnet_cidrs) : 0
 
   subnet_id      = aws_subnet.isolated[count.index].id
   route_table_id = aws_route_table.isolated[count.index].id
@@ -250,7 +250,7 @@ resource "aws_subnet" "database" {
 # Database Route Tables
 # ===================================
 resource "aws_route_table" "database" {
-  count = length(var.database_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.database_subnet_cidrs) : 0
 
   vpc_id = aws_vpc.this.id
 
@@ -265,7 +265,7 @@ resource "aws_route_table" "database" {
 }
 
 resource "aws_route_table_association" "database" {
-  count = length(var.database_subnet_cidrs)
+  count = var.enable_route_tables ? length(var.database_subnet_cidrs) : 0
 
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.database[count.index].id

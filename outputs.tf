@@ -70,20 +70,20 @@ output "nat_gateway_ips" {
 
 output "private_route_table_ids" {
   description = "List of private route table IDs"
-  value       = aws_route_table.private[*].id
+  value       = var.enable_route_tables ? aws_route_table.private[*].id : []
 }
 
 output "public_route_table_ids" {
   description = "List of public route table IDs"
-  value       = try(aws_route_table.public[*].id, [])
+  value       = var.enable_route_tables ? try(aws_route_table.public[*].id, []) : []
 }
 
 output "isolated_route_table_ids" {
   description = "List of isolated route table IDs"
-  value       = try(aws_route_table.isolated[*].id, [])
+  value       = var.enable_route_tables ? try(aws_route_table.isolated[*].id, []) : []
 }
 
 output "database_route_table_ids" {
   description = "List of database route table IDs"
-  value       = try(aws_route_table.database[*].id, [])
+  value       = var.enable_route_tables ? try(aws_route_table.database[*].id, []) : []
 }

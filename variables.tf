@@ -209,3 +209,9 @@ variable "enable_nacls" {
   type        = bool
   default     = true
 }
+
+variable "enable_route_tables" {
+  description = "Whether to create and configure route tables for subnets"
+  type        = bool
+  default     = true
+}
