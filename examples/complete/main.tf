@@ -117,7 +117,7 @@ output "database_subnet_ids" {
   value       = module.vpc.database_subnet_ids
 }
 
-output "nat_gateway_ips" {
+output "nat_gateway_ip" {
   description = "List of NAT Gateway public IPs"
-  value       = module.vpc.nat_gateway_ips
+  value       = module.vpc.nat_gateway_ip
 }

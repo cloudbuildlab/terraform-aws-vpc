@@ -43,9 +43,9 @@ output "nat_gateway_id" {
   value       = try(aws_nat_gateway.this[0].id, null)
 }
 
-output "nat_gateway_ips" {
-  description = "List of NAT Gateway public IPs"
-  value       = aws_nat_gateway.this[*].public_ip
+output "nat_gateway_ip" {
+  description = "The public IP of the NAT Gateway"
+  value       = try(aws_nat_gateway.this[0].public_ip, null)
 }
 
 output "nat_gateway_private_ip" {
