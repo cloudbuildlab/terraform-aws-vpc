@@ -51,14 +51,14 @@ module "vpc" {
   enable_ecr_dkr_endpoint        = false # not supported in ap-southeast-2-akl-1a
   enable_ecs_endpoint            = false # not supported in ap-southeast-2-akl-1a
   enable_kms_endpoint            = false # not supported in ap-southeast-2-akl-1a
-  enable_logs_endpoint           = true
-  enable_monitoring_endpoint     = true
+  enable_logs_endpoint           = false # not supported in ap-southeast-2-akl-1a
+  enable_monitoring_endpoint     = false # not supported in ap-southeast-2-akl-1a
   enable_rds_endpoint            = false # not supported in ap-southeast-2-akl-1a
   enable_s3_endpoint             = true
   enable_secretsmanager_endpoint = false # not supported in ap-southeast-2-akl-1a
   enable_sns_endpoint            = false # not supported in ap-southeast-2-akl-1a
   enable_sqs_endpoint            = false # not supported in ap-southeast-2-akl-1a
-  enable_ssm_endpoint            = true
+  enable_ssm_endpoint            = false # not supported in ap-southeast-2-akl-1a
 
   # Tags
   tags = {
