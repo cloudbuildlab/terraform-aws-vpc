@@ -7,6 +7,7 @@ run "setup_vpc" {
 
 # Main test block to create and test the VPC, subnets, and NAT gateway
 run "test_vpc_configuration" {
+
   variables {
     vpc_name = "example-vpc"
     vpc_cidr = "10.0.0.0/16"
@@ -32,10 +33,7 @@ run "test_vpc_configuration" {
     nat_gateway_type   = "single" # Options: "single" or "one_per_az"
 
     # VPC Endpoints configuration
-    enable_logs_endpoint       = true
-    enable_monitoring_endpoint = true
-    enable_s3_endpoint         = true
-    enable_ssm_endpoint        = true
+    enable_s3_endpoint = true
 
     # Route tables configuration
     enable_route_tables = true
