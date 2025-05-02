@@ -9,6 +9,27 @@ resource "aws_network_acl" "public" {
   vpc_id     = aws_vpc.this.id
   subnet_ids = aws_subnet.public[*].id
 
+  # Inbound Rules
+  # Allow all traffic from within the VPC
+  ingress {
+    protocol   = "-1"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = var.vpc_cidr
+    from_port  = 0
+    to_port    = 0
+  }
+
+  # Allow all traffic from internet
+  ingress {
+    protocol   = "-1"
+    rule_no    = 200
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
   # Outbound: Allow all to anywhere
   egress {
     protocol   = "-1"
@@ -36,8 +57,7 @@ resource "aws_network_acl" "private" {
   subnet_ids = aws_subnet.private[*].id
 
   # Inbound Rules
-
-  # Allow all traffic from within the VPC (for internal communication)
+  # Allow all traffic from within the VPC (for inter-subnet communication)
   ingress {
     protocol   = "-1"
     rule_no    = 100
@@ -47,18 +67,27 @@ resource "aws_network_acl" "private" {
     to_port    = 0
   }
 
-  # Allow return traffic from NAT Gateway (ephemeral ports, all protocols)
+  # Allow traffic from NAT Gateway
+  ingress {
+    protocol   = "-1"
+    rule_no    = 150
+    action     = "allow"
+    cidr_block = var.public_subnet_cidrs[0] # NAT Gateway's subnet
+    from_port  = 0
+    to_port    = 0
+  }
+
+  # Allow return traffic from internet (ephemeral ports)
   ingress {
     protocol   = "-1"
     rule_no    = 200
     action     = "allow"
     cidr_block = "0.0.0.0/0"
-    from_port  = 0
-    to_port    = 0
+    from_port  = 1024
+    to_port    = 65535
   }
 
   # Outbound Rules
-
   # Allow all outbound traffic (for internet access via NAT Gateway)
   egress {
     protocol   = "-1"
@@ -121,7 +150,8 @@ resource "aws_network_acl" "database" {
   vpc_id     = aws_vpc.this.id
   subnet_ids = aws_subnet.database[*].id
 
-  # Inbound: Allow all from within the VPC (or restrict to app subnets as needed)
+  # Inbound Rules
+  # Allow all from within the VPC
   ingress {
     protocol   = "-1"
     rule_no    = 100
@@ -131,12 +161,33 @@ resource "aws_network_acl" "database" {
     to_port    = 0
   }
 
-  # Outbound: Allow all to within the VPC
+  # Allow traffic from any source through Transit Gateway
+  ingress {
+    protocol   = "-1"
+    rule_no    = 150
+    action     = "allow"
+    cidr_block = "0.0.0.0/0" # Allow any source through TGW
+    from_port  = 0
+    to_port    = 0
+  }
+
+  # Outbound Rules
+  # Allow all to within the VPC
   egress {
     protocol   = "-1"
     rule_no    = 100
     action     = "allow"
     cidr_block = var.vpc_cidr
+    from_port  = 0
+    to_port    = 0
+  }
+
+  # Allow traffic to any destination through Transit Gateway
+  egress {
+    protocol   = "-1"
+    rule_no    = 150
+    action     = "allow"
+    cidr_block = "0.0.0.0/0" # Allow any destination through TGW
     from_port  = 0
     to_port    = 0
   }
