@@ -67,14 +67,17 @@ resource "aws_network_acl" "private" {
     to_port    = 0
   }
 
-  # Allow traffic from NAT Gateway
-  ingress {
-    protocol   = "-1"
-    rule_no    = 150
-    action     = "allow"
-    cidr_block = var.public_subnet_cidrs[0] # NAT Gateway's subnet
-    from_port  = 0
-    to_port    = 0
+  # Allow traffic from NAT Gateway(s)
+  dynamic "ingress" {
+    for_each = var.nat_gateway_type == "one_per_az" ? var.public_subnet_cidrs : [var.public_subnet_cidrs[0]]
+    content {
+      protocol   = "-1"
+      rule_no    = 150 + ingress.key
+      action     = "allow"
+      cidr_block = ingress.value
+      from_port  = 0
+      to_port    = 0
+    }
   }
 
   # Allow return traffic from internet (ephemeral ports)
@@ -83,8 +86,8 @@ resource "aws_network_acl" "private" {
     rule_no    = 200
     action     = "allow"
     cidr_block = "0.0.0.0/0"
-    from_port  = 1024
-    to_port    = 65535
+    from_port  = 0
+    to_port    = 0
   }
 
   # Outbound Rules
