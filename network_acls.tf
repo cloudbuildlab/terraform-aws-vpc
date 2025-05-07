@@ -69,10 +69,15 @@ resource "aws_network_acl" "private" {
 
   # Allow traffic from NAT Gateway(s)
   dynamic "ingress" {
-    for_each = var.nat_gateway_type == "one_per_az" ? var.public_subnet_cidrs : [var.public_subnet_cidrs[0]]
+    for_each = (
+      var.nat_gateway_type == "one_per_az" || length(var.public_subnet_cidrs) == 0
+      ? var.public_subnet_cidrs
+      : slice(var.public_subnet_cidrs, 0, 1)
+    )
+
     content {
       protocol   = "-1"
-      rule_no    = 150 + ingress.key
+      rule_no    = 150 + index(var.public_subnet_cidrs, ingress.value)
       action     = "allow"
       cidr_block = ingress.value
       from_port  = 0
