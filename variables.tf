@@ -215,3 +215,54 @@ variable "enable_route_tables" {
   type        = bool
   default     = true
 }
+
+variable "custom_routes" {
+  description = "Custom routes configuration per route table type"
+  type = object({
+    public = optional(object({
+      use_only = bool
+      routes = list(object({
+        cidr_block                = string
+        gateway_id                = optional(string)
+        nat_gateway_id            = optional(string)
+        network_interface_id      = optional(string)
+        transit_gateway_id        = optional(string)
+        vpc_peering_connection_id = optional(string)
+      }))
+    }), null)
+    private = optional(object({
+      use_only = bool
+      routes = list(object({
+        cidr_block                = string
+        gateway_id                = optional(string)
+        nat_gateway_id            = optional(string)
+        network_interface_id      = optional(string)
+        transit_gateway_id        = optional(string)
+        vpc_peering_connection_id = optional(string)
+      }))
+    }), null)
+    isolated = optional(object({
+      use_only = bool
+      routes = list(object({
+        cidr_block                = string
+        gateway_id                = optional(string)
+        nat_gateway_id            = optional(string)
+        network_interface_id      = optional(string)
+        transit_gateway_id        = optional(string)
+        vpc_peering_connection_id = optional(string)
+      }))
+    }), null)
+    database = optional(object({
+      use_only = bool
+      routes = list(object({
+        cidr_block                = string
+        gateway_id                = optional(string)
+        nat_gateway_id            = optional(string)
+        network_interface_id      = optional(string)
+        transit_gateway_id        = optional(string)
+        vpc_peering_connection_id = optional(string)
+      }))
+    }), null)
+  })
+  default = {}
+}
