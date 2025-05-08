@@ -1,4 +1,3 @@
-
 # Data source for current region
 data "aws_region" "current" {}
 
@@ -112,10 +111,22 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
   dynamic "route" {
-    for_each = var.create_igw ? [1] : []
+    for_each = var.create_igw && !try(var.custom_routes.public.use_only, false) ? [1] : []
     content {
       cidr_block = "0.0.0.0/0"
       gateway_id = aws_internet_gateway.this[0].id
+    }
+  }
+
+  dynamic "route" {
+    for_each = try(var.custom_routes.public.routes, [])
+    content {
+      cidr_block                = route.value.cidr_block
+      gateway_id                = route.value.gateway_id
+      nat_gateway_id            = route.value.nat_gateway_id
+      network_interface_id      = route.value.network_interface_id
+      transit_gateway_id        = route.value.transit_gateway_id
+      vpc_peering_connection_id = route.value.vpc_peering_connection_id
     }
   }
 
@@ -164,10 +175,22 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
 
   dynamic "route" {
-    for_each = var.enable_nat_gateway ? [1] : []
+    for_each = var.enable_nat_gateway && !try(var.custom_routes.private.use_only, false) ? [1] : []
     content {
       cidr_block     = "0.0.0.0/0"
       nat_gateway_id = aws_nat_gateway.this[var.nat_gateway_type == "single" ? 0 : count.index].id
+    }
+  }
+
+  dynamic "route" {
+    for_each = try(var.custom_routes.private.routes, [])
+    content {
+      cidr_block                = route.value.cidr_block
+      gateway_id                = route.value.gateway_id
+      nat_gateway_id            = route.value.nat_gateway_id
+      network_interface_id      = route.value.network_interface_id
+      transit_gateway_id        = route.value.transit_gateway_id
+      vpc_peering_connection_id = route.value.vpc_peering_connection_id
     }
   }
 
@@ -215,6 +238,18 @@ resource "aws_route_table" "isolated" {
 
   vpc_id = aws_vpc.this.id
 
+  dynamic "route" {
+    for_each = try(var.custom_routes.isolated.routes, [])
+    content {
+      cidr_block                = route.value.cidr_block
+      gateway_id                = route.value.gateway_id
+      nat_gateway_id            = route.value.nat_gateway_id
+      network_interface_id      = route.value.network_interface_id
+      transit_gateway_id        = route.value.transit_gateway_id
+      vpc_peering_connection_id = route.value.vpc_peering_connection_id
+    }
+  }
+
   tags = merge(
     {
       Name = "${var.vpc_name}-isolated-${var.availability_zones[count.index]}"
@@ -258,6 +293,18 @@ resource "aws_route_table" "database" {
   count = var.enable_route_tables ? length(var.database_subnet_cidrs) : 0
 
   vpc_id = aws_vpc.this.id
+
+  dynamic "route" {
+    for_each = try(var.custom_routes.database.routes, [])
+    content {
+      cidr_block                = route.value.cidr_block
+      gateway_id                = route.value.gateway_id
+      nat_gateway_id            = route.value.nat_gateway_id
+      network_interface_id      = route.value.network_interface_id
+      transit_gateway_id        = route.value.transit_gateway_id
+      vpc_peering_connection_id = route.value.vpc_peering_connection_id
+    }
+  }
 
   tags = merge(
     {
