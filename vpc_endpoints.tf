@@ -10,7 +10,7 @@ resource "aws_vpc_endpoint" "s3" {
   count = var.enable_s3_endpoint ? 1 : 0
 
   vpc_id            = aws_vpc.this.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
+  service_name      = "com.amazonaws.${data.aws_region.current.region}.s3"
   vpc_endpoint_type = "Gateway"
 
   route_table_ids = concat(
@@ -36,7 +36,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   count = var.enable_ecr_api_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.ecr.api"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -58,7 +58,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   count = var.enable_ecr_dkr_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.ecr.dkr"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -80,7 +80,7 @@ resource "aws_vpc_endpoint" "ecs" {
   count = var.enable_ecs_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecs"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.ecs"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -102,7 +102,7 @@ resource "aws_vpc_endpoint" "kms" {
   count = var.enable_kms_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.kms"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.kms"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -124,7 +124,7 @@ resource "aws_vpc_endpoint" "logs" {
   count = var.enable_logs_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.logs"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.logs"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -146,7 +146,7 @@ resource "aws_vpc_endpoint" "monitoring" {
   count = var.enable_monitoring_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.monitoring"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.monitoring"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -168,7 +168,7 @@ resource "aws_vpc_endpoint" "rds" {
   count = var.enable_rds_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.rds"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.rds"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.database[*].id
@@ -190,7 +190,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   count = var.enable_secretsmanager_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.secretsmanager"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.secretsmanager"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -212,7 +212,7 @@ resource "aws_vpc_endpoint" "sns" {
   count = var.enable_sns_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.sns"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.sns"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -234,7 +234,7 @@ resource "aws_vpc_endpoint" "ssm" {
   count = var.enable_ssm_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.ssm"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.ssm"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
@@ -256,7 +256,7 @@ resource "aws_vpc_endpoint" "sqs" {
   count = var.enable_sqs_endpoint ? 1 : 0
 
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.sqs"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.sqs"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
