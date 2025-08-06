@@ -94,6 +94,8 @@ No modules.
 | <a name="input_enable_sns_endpoint"></a> [enable\_sns\_endpoint](#input\_enable\_sns\_endpoint) | Whether to enable SNS VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_sqs_endpoint"></a> [enable\_sqs\_endpoint](#input\_enable\_sqs\_endpoint) | Whether to enable SQS VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_ssm_endpoint"></a> [enable\_ssm\_endpoint](#input\_enable\_ssm\_endpoint) | Whether to enable Systems Manager VPC endpoint | `bool` | `false` | no |
+| <a name="input_enable_eks_tags"></a> [enable\_eks\_tags](#input\_enable\_eks\_tags) | Whether to add EKS-specific tags to subnets | `bool` | `false` | no |
+| <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Name of the EKS cluster for subnet tagging | `string` | `""` | no |
 | <a name="input_instance_tenancy"></a> [instance\_tenancy](#input\_instance\_tenancy) | A tenancy option for instances launched into the VPC | `string` | `"default"` | no |
 | <a name="input_interface_endpoints"></a> [interface\_endpoints](#input\_interface\_endpoints) | List of interface endpoints to enable | `list(string)` | `[]` | no |
 | <a name="input_isolated_subnet_cidrs"></a> [isolated\_subnet\_cidrs](#input\_isolated\_subnet\_cidrs) | CIDR blocks for isolated subnets (one per AZ) | `list(string)` | `[]` | no |

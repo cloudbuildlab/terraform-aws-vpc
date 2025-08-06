@@ -266,3 +266,20 @@ variable "custom_routes" {
   })
   default = {}
 }
+
+variable "enable_eks_tags" {
+  description = "Whether to add EKS-specific tags to public and private subnets"
+  type        = bool
+  default     = false
+}
+
+variable "eks_cluster_name" {
+  description = "Name of the EKS cluster for subnet tagging"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.enable_eks_tags == false || (var.enable_eks_tags == true && var.eks_cluster_name != "")
+    error_message = "eks_cluster_name must be provided when enable_eks_tags is true."
+  }
+}

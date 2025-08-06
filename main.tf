@@ -1,6 +1,15 @@
 # Data source for current region
 data "aws_region" "current" {}
 
+# ===================================
+# Local values for EKS tags
+# ===================================
+locals {
+  eks_tags = var.enable_eks_tags ? {
+    "kubernetes.io/role/internal-elb"               = "1"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+  } : {}
+}
 
 # ===================================
 # VPC Configuration
@@ -98,7 +107,8 @@ resource "aws_subnet" "public" {
       Type     = "public"
       VPC_Type = var.vpc_type
     },
-    var.tags
+    var.tags,
+    local.eks_tags
   )
 }
 
@@ -162,7 +172,8 @@ resource "aws_subnet" "private" {
       Name = "${var.vpc_name}-private-${count.index + 1}"
       Type = "private"
     },
-    var.tags
+    var.tags,
+    local.eks_tags
   )
 }
 

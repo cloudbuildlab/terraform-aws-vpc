@@ -66,6 +66,10 @@ module "vpc" {
     Project     = "demo"
     ManagedBy   = "terraform"
   }
+
+  # EKS Configuration (optional)
+  enable_eks_tags  = true
+  eks_cluster_name = "example-cluster"
 }
 
 ############################################
