@@ -1,4 +1,4 @@
-# Minimal EKS VPC Configuration
+# EKS VPC Configuration
 
 This example demonstrates the **absolute minimum** VPC configuration needed for Amazon EKS.
 

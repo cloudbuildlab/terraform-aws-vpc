@@ -17,7 +17,7 @@ provider "aws" {
 }
 
 ############################################
-# Minimal EKS VPC Configuration
+# EKS VPC Configuration
 ############################################
 
 module "vpc" {
