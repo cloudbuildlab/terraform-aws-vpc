@@ -13,6 +13,13 @@ This example demonstrates the **absolute minimum** VPC configuration needed for 
 
 When `enable_eks_tags = true`, the following tags are added to **public and private subnets only**:
 
+**Public Subnets:**
+
+- `kubernetes.io/role/elb = "1"`: Indicates the subnet can be used for internet-facing load balancers
+- `kubernetes.io/cluster/{cluster_name} = "shared"`: Indicates the subnet is shared with the EKS cluster
+
+**Private Subnets:**
+
 - `kubernetes.io/role/internal-elb = "1"`: Indicates the subnet can be used for internal load balancers
 - `kubernetes.io/cluster/{cluster_name} = "shared"`: Indicates the subnet is shared with the EKS cluster
 
