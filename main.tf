@@ -5,7 +5,14 @@ data "aws_region" "current" {}
 # Local values for EKS tags
 # ===================================
 locals {
-  eks_tags = var.enable_eks_tags ? {
+  # EKS tags for public subnets (internet-facing load balancers)
+  eks_public_tags = var.enable_eks_tags ? {
+    "kubernetes.io/role/elb"                        = "1"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+  } : {}
+
+  # EKS tags for private subnets (internal load balancers)
+  eks_private_tags = var.enable_eks_tags ? {
     "kubernetes.io/role/internal-elb"               = "1"
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
   } : {}
@@ -108,7 +115,7 @@ resource "aws_subnet" "public" {
       VPC_Type = var.vpc_type
     },
     var.tags,
-    local.eks_tags
+    local.eks_public_tags
   )
 }
 
@@ -173,7 +180,7 @@ resource "aws_subnet" "private" {
       Type = "private"
     },
     var.tags,
-    local.eks_tags
+    local.eks_private_tags
   )
 }
 
