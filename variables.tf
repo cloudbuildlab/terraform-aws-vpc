@@ -34,22 +34,10 @@ variable "instance_tenancy" {
   }
 }
 
-variable "enable_ipv6" {
-  description = "Whether to enable IPv6 support"
+variable "assign_generated_ipv6_cidr_block" {
+  description = "Whether to assign AWS-generated IPv6 CIDR block to VPC and subnets. Note: Changing from true to false requires manually removing IPv6 CIDR blocks from all subnets first before applying."
   type        = bool
   default     = false
-}
-
-variable "assign_generated_ipv6_cidr_block" {
-  description = "Whether to assign AWS-generated IPv6 CIDR block to VPC. Ignored if ipv6_cidr_block is set."
-  type        = bool
-  default     = true
-}
-
-variable "ipv6_cidr_block" {
-  description = "IPv6 CIDR block for VPC. Note: This requires IPAM configuration. For custom IPv6 CIDRs without IPAM, use aws_vpc_ipv6_cidr_block_association resource separately. If not provided and enable_ipv6=true, AWS will auto-assign via assign_generated_ipv6_cidr_block."
-  type        = string
-  default     = null
 }
 
 variable "enable_dns_hostnames" {
@@ -105,30 +93,6 @@ variable "isolated_subnet_cidrs" {
 
 variable "database_subnet_cidrs" {
   description = "CIDR blocks for database subnets (one per AZ)"
-  type        = list(string)
-  default     = []
-}
-
-variable "public_subnet_ipv6_cidrs" {
-  description = "IPv6 CIDR blocks for public subnets. Must match number of availability_zones."
-  type        = list(string)
-  default     = []
-}
-
-variable "private_subnet_ipv6_cidrs" {
-  description = "IPv6 CIDR blocks for private subnets. Must match number of availability_zones."
-  type        = list(string)
-  default     = []
-}
-
-variable "isolated_subnet_ipv6_cidrs" {
-  description = "IPv6 CIDR blocks for isolated subnets. Must match number of availability_zones."
-  type        = list(string)
-  default     = []
-}
-
-variable "database_subnet_ipv6_cidrs" {
-  description = "IPv6 CIDR blocks for database subnets. Must match number of availability_zones."
   type        = list(string)
   default     = []
 }

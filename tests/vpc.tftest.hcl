@@ -13,7 +13,7 @@ run "test_vpc_configuration" {
     vpc_cidr = "10.0.0.0/16"
 
     # Enable IPv6
-    enable_ipv6 = false
+    assign_generated_ipv6_cidr_block = false
 
     # DNS Configuration
     enable_dns_hostnames = true
@@ -117,7 +117,7 @@ run "test_ipv6_dual_stack" {
     vpc_cidr = "10.1.0.0/16"
 
     # Enable IPv6
-    enable_ipv6 = true
+    assign_generated_ipv6_cidr_block = true
 
     # DNS Configuration
     enable_dns_hostnames = true
@@ -130,9 +130,6 @@ run "test_ipv6_dual_stack" {
     public_subnet_cidrs  = []
     private_subnet_cidrs = ["10.1.11.0/24"]
 
-    # IPv6 Subnet CIDRs (empty - will be auto-assigned from VPC pool if needed)
-    public_subnet_ipv6_cidrs  = []
-    private_subnet_ipv6_cidrs = []
 
     # NAT Gateway disabled to reduce resource usage (IPv6 uses Egress-Only Gateway)
     enable_nat_gateway = false
