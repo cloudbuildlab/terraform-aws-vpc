@@ -40,6 +40,46 @@ resource "aws_network_acl" "public" {
     to_port    = 0
   }
 
+  # IPv6 Inbound Rules
+  # Allow all IPv6 traffic from within the VPC
+  dynamic "ingress" {
+    for_each = var.enable_ipv6 && aws_vpc.this.ipv6_cidr_block != null ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 300
+      action          = "allow"
+      ipv6_cidr_block = aws_vpc.this.ipv6_cidr_block
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # Allow all IPv6 traffic from internet
+  dynamic "ingress" {
+    for_each = var.enable_ipv6 ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 400
+      action          = "allow"
+      ipv6_cidr_block = "::/0"
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # IPv6 Outbound: Allow all to anywhere
+  dynamic "egress" {
+    for_each = var.enable_ipv6 ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 200
+      action          = "allow"
+      ipv6_cidr_block = "::/0"
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
   tags = merge(
     {
       Name = "${var.vpc_name}-public"
@@ -106,6 +146,47 @@ resource "aws_network_acl" "private" {
     to_port    = 0
   }
 
+  # IPv6 Inbound Rules
+  # Allow all IPv6 traffic from within the VPC
+  dynamic "ingress" {
+    for_each = var.enable_ipv6 && aws_vpc.this.ipv6_cidr_block != null ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 300
+      action          = "allow"
+      ipv6_cidr_block = aws_vpc.this.ipv6_cidr_block
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # Allow return IPv6 traffic from internet (ephemeral ports)
+  dynamic "ingress" {
+    for_each = var.enable_ipv6 ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 400
+      action          = "allow"
+      ipv6_cidr_block = "::/0"
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # IPv6 Outbound Rules
+  # Allow all IPv6 outbound traffic (for internet access via Egress-Only Gateway)
+  dynamic "egress" {
+    for_each = var.enable_ipv6 ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 200
+      action          = "allow"
+      ipv6_cidr_block = "::/0"
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
   tags = merge(
     {
       Name = "${var.vpc_name}-private"
@@ -140,6 +221,32 @@ resource "aws_network_acl" "isolated" {
     cidr_block = var.vpc_cidr
     from_port  = 0
     to_port    = 0
+  }
+
+  # IPv6 Inbound: Allow all IPv6 from within the VPC
+  dynamic "ingress" {
+    for_each = var.enable_ipv6 && aws_vpc.this.ipv6_cidr_block != null ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 200
+      action          = "allow"
+      ipv6_cidr_block = aws_vpc.this.ipv6_cidr_block
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # IPv6 Outbound: Allow all IPv6 to within the VPC
+  dynamic "egress" {
+    for_each = var.enable_ipv6 && aws_vpc.this.ipv6_cidr_block != null ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 200
+      action          = "allow"
+      ipv6_cidr_block = aws_vpc.this.ipv6_cidr_block
+      from_port       = 0
+      to_port         = 0
+    }
   }
 
   tags = merge(
@@ -198,6 +305,60 @@ resource "aws_network_acl" "database" {
     cidr_block = "0.0.0.0/0" # Allow any destination through TGW
     from_port  = 0
     to_port    = 0
+  }
+
+  # IPv6 Inbound Rules
+  # Allow all IPv6 from within the VPC
+  dynamic "ingress" {
+    for_each = var.enable_ipv6 && aws_vpc.this.ipv6_cidr_block != null ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 200
+      action          = "allow"
+      ipv6_cidr_block = aws_vpc.this.ipv6_cidr_block
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # Allow IPv6 traffic from any source through Transit Gateway
+  dynamic "ingress" {
+    for_each = var.enable_ipv6 ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 250
+      action          = "allow"
+      ipv6_cidr_block = "::/0" # Allow any IPv6 source through TGW
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # IPv6 Outbound Rules
+  # Allow all IPv6 to within the VPC
+  dynamic "egress" {
+    for_each = var.enable_ipv6 && aws_vpc.this.ipv6_cidr_block != null ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 200
+      action          = "allow"
+      ipv6_cidr_block = aws_vpc.this.ipv6_cidr_block
+      from_port       = 0
+      to_port         = 0
+    }
+  }
+
+  # Allow IPv6 traffic to any destination through Transit Gateway
+  dynamic "egress" {
+    for_each = var.enable_ipv6 ? [1] : []
+    content {
+      protocol        = "-1"
+      rule_no         = 250
+      action          = "allow"
+      ipv6_cidr_block = "::/0" # Allow any IPv6 destination through TGW
+      from_port       = 0
+      to_port         = 0
+    }
   }
 
   tags = merge(

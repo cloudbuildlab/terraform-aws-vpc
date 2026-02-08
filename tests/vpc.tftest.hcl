@@ -108,3 +108,70 @@ run "test_vpc_configuration" {
     error_message = "Private subnets are missing a NAT Gateway route"
   }
 }
+
+# Test IPv6 dual-stack configuration
+# Minimal test using only private subnets to avoid Internet Gateway (hitting account limits)
+run "test_ipv6_dual_stack" {
+  variables {
+    vpc_name = "example-vpc-ipv6"
+    vpc_cidr = "10.1.0.0/16"
+
+    # Enable IPv6
+    enable_ipv6 = true
+
+    # DNS Configuration
+    enable_dns_hostnames = true
+    enable_dns_support   = true
+
+    # Subnet configuration (1 AZ, private only to avoid IGW)
+    availability_zones = ["ap-southeast-2a"]
+
+    # IPv4 Subnet CIDRs (private only - no public subnets to avoid IGW)
+    public_subnet_cidrs  = []
+    private_subnet_cidrs = ["10.1.11.0/24"]
+
+    # IPv6 Subnet CIDRs (empty - will be auto-assigned from VPC pool if needed)
+    public_subnet_ipv6_cidrs  = []
+    private_subnet_ipv6_cidrs = []
+
+    # NAT Gateway disabled to reduce resource usage (IPv6 uses Egress-Only Gateway)
+    enable_nat_gateway = false
+
+    # Disable IGW creation since we have no public subnets
+    create_igw = false
+
+    # Route tables configuration
+    enable_route_tables = true
+
+    # Tags
+    tags = {
+      Environment = "test"
+      Project     = "ipv6-test"
+      ManagedBy   = "terraform"
+    }
+  }
+
+  # Assert that VPC has IPv6 CIDR block
+  assert {
+    condition     = aws_vpc.this.ipv6_cidr_block != null && aws_vpc.this.ipv6_cidr_block != ""
+    error_message = "VPC does not have an IPv6 CIDR block assigned"
+  }
+
+  # Assert that private subnet exists
+  assert {
+    condition     = length(aws_subnet.private) == 1
+    error_message = "Expected 1 private subnet but found different count"
+  }
+
+  # Assert that egress-only internet gateway is created
+  assert {
+    condition     = length(aws_egress_only_internet_gateway.this) == 1
+    error_message = "Egress-Only Internet Gateway was not created for IPv6"
+  }
+
+  # This test validates basic IPv6 functionality:
+  # - VPC receives an IPv6 CIDR block when enabled
+  # - Egress-Only Internet Gateway is created for private subnet IPv6 connectivity
+  # Note: IPv6 routes and subnet IPv6 CIDRs require explicit IPv6 CIDR assignment
+  # This test uses private subnets only to minimize resource usage (no IGW required)
+}

@@ -29,8 +29,11 @@ resource "aws_vpc" "this" {
   # Instance tenancy - dedicated for compliance requirements, default for cost efficiency
   instance_tenancy = var.instance_tenancy
 
-  # Enable IPv6 support
-  assign_generated_ipv6_cidr_block = var.enable_ipv6
+  # IPv6 configuration
+  # Note: ipv6_cidr_block attribute requires ipv6_ipam_pool_id (for IPAM)
+  # For custom IPv6 CIDRs without IPAM, use aws_vpc_ipv6_cidr_block_association resource separately
+  # Here we only support auto-assignment via assign_generated_ipv6_cidr_block
+  assign_generated_ipv6_cidr_block = var.enable_ipv6 ? var.assign_generated_ipv6_cidr_block : false
 
   # Additional DNS settings
   enable_network_address_usage_metrics = true
@@ -108,6 +111,10 @@ resource "aws_subnet" "public" {
   availability_zone       = var.availability_zones[count.index]
   map_public_ip_on_launch = true
 
+  # IPv6 configuration
+  ipv6_cidr_block                 = var.enable_ipv6 && length(var.public_subnet_ipv6_cidrs) > count.index ? var.public_subnet_ipv6_cidrs[count.index] : null
+  assign_ipv6_address_on_creation = var.enable_ipv6 && length(var.public_subnet_ipv6_cidrs) > count.index ? true : false
+
   tags = merge(
     {
       Name     = "${var.vpc_name}-public-${count.index + 1}"
@@ -174,6 +181,10 @@ resource "aws_subnet" "private" {
   cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = var.availability_zones[count.index]
 
+  # IPv6 configuration
+  ipv6_cidr_block                 = var.enable_ipv6 && length(var.private_subnet_ipv6_cidrs) > count.index ? var.private_subnet_ipv6_cidrs[count.index] : null
+  assign_ipv6_address_on_creation = var.enable_ipv6 && length(var.private_subnet_ipv6_cidrs) > count.index ? true : false
+
   tags = merge(
     {
       Name = "${var.vpc_name}-private-${count.index + 1}"
@@ -239,6 +250,10 @@ resource "aws_subnet" "isolated" {
   cidr_block        = var.isolated_subnet_cidrs[count.index]
   availability_zone = var.availability_zones[count.index]
 
+  # IPv6 configuration
+  ipv6_cidr_block                 = var.enable_ipv6 && length(var.isolated_subnet_ipv6_cidrs) > count.index ? var.isolated_subnet_ipv6_cidrs[count.index] : null
+  assign_ipv6_address_on_creation = var.enable_ipv6 && length(var.isolated_subnet_ipv6_cidrs) > count.index ? true : false
+
   tags = merge(
     {
       Name = "${var.vpc_name}-isolated-${count.index + 1}"
@@ -295,6 +310,10 @@ resource "aws_subnet" "database" {
   cidr_block        = var.database_subnet_cidrs[count.index]
   availability_zone = var.availability_zones[count.index]
 
+  # IPv6 configuration
+  ipv6_cidr_block                 = var.enable_ipv6 && length(var.database_subnet_ipv6_cidrs) > count.index ? var.database_subnet_ipv6_cidrs[count.index] : null
+  assign_ipv6_address_on_creation = var.enable_ipv6 && length(var.database_subnet_ipv6_cidrs) > count.index ? true : false
+
   tags = merge(
     {
       Name = "${var.vpc_name}-database-${count.index + 1}"
@@ -339,4 +358,41 @@ resource "aws_route_table_association" "database" {
 
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.database[count.index].id
+}
+
+# ===================================
+# Egress-Only Internet Gateway (for IPv6)
+# ===================================
+resource "aws_egress_only_internet_gateway" "this" {
+  count  = var.enable_ipv6 && length(var.private_subnet_cidrs) > 0 ? 1 : 0
+  vpc_id = aws_vpc.this.id
+
+  tags = merge(
+    {
+      Name     = "${var.vpc_name}-egw"
+      VPC_Type = var.vpc_type
+    },
+    var.tags
+  )
+}
+
+# ===================================
+# IPv6 Routes
+# ===================================
+# Public subnet IPv6 route to Internet Gateway
+resource "aws_route" "public_ipv6_internet_gateway" {
+  count = var.enable_ipv6 && var.enable_route_tables && var.create_igw && length(var.public_subnet_cidrs) > 0 && length(var.public_subnet_ipv6_cidrs) > 0 ? length(aws_route_table.public) : 0
+
+  route_table_id              = aws_route_table.public[count.index].id
+  destination_ipv6_cidr_block = "::/0"
+  gateway_id                  = aws_internet_gateway.this[0].id
+}
+
+# Private subnet IPv6 route to Egress-Only Internet Gateway
+resource "aws_route" "private_ipv6_egress_only_gateway" {
+  count = var.enable_ipv6 && var.enable_route_tables && length(var.private_subnet_cidrs) > 0 && length(var.private_subnet_ipv6_cidrs) > 0 ? length(aws_route_table.private) : 0
+
+  route_table_id              = aws_route_table.private[count.index].id
+  destination_ipv6_cidr_block = "::/0"
+  egress_only_gateway_id      = aws_egress_only_internet_gateway.this[0].id
 }
