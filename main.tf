@@ -158,6 +158,14 @@ resource "aws_route_table" "public" {
     }
   }
 
+  dynamic "route" {
+    for_each = var.assign_generated_ipv6_cidr_block && var.create_igw && !try(var.custom_routes.public.use_only, false) && length(var.public_subnet_cidrs) > 0 ? [1] : []
+    content {
+      ipv6_cidr_block = "::/0"
+      gateway_id      = aws_internet_gateway.this[0].id
+    }
+  }
+
   tags = merge(
     {
       Name = "${var.vpc_name}-public-${var.availability_zones[count.index]}"
@@ -224,6 +232,14 @@ resource "aws_route_table" "private" {
       network_interface_id      = route.value.network_interface_id
       transit_gateway_id        = route.value.transit_gateway_id
       vpc_peering_connection_id = route.value.vpc_peering_connection_id
+    }
+  }
+
+  dynamic "route" {
+    for_each = var.assign_generated_ipv6_cidr_block && var.enable_route_tables && length(var.private_subnet_cidrs) > 0 ? [1] : []
+    content {
+      ipv6_cidr_block        = "::/0"
+      egress_only_gateway_id = aws_egress_only_internet_gateway.this[0].id
     }
   }
 
@@ -378,25 +394,4 @@ resource "aws_egress_only_internet_gateway" "this" {
     },
     var.tags
   )
-}
-
-# ===================================
-# IPv6 Routes
-# ===================================
-# Public subnet IPv6 route to Internet Gateway
-resource "aws_route" "public_ipv6_internet_gateway" {
-  count = var.assign_generated_ipv6_cidr_block && var.enable_route_tables && var.create_igw && length(var.public_subnet_cidrs) > 0 ? length(aws_route_table.public) : 0
-
-  route_table_id              = aws_route_table.public[count.index].id
-  destination_ipv6_cidr_block = "::/0"
-  gateway_id                  = aws_internet_gateway.this[0].id
-}
-
-# Private subnet IPv6 route to Egress-Only Internet Gateway
-resource "aws_route" "private_ipv6_egress_only_gateway" {
-  count = var.assign_generated_ipv6_cidr_block && var.enable_route_tables && length(var.private_subnet_cidrs) > 0 ? length(aws_route_table.private) : 0
-
-  route_table_id              = aws_route_table.private[count.index].id
-  destination_ipv6_cidr_block = "::/0"
-  egress_only_gateway_id      = aws_egress_only_internet_gateway.this[0].id
 }
