@@ -274,6 +274,50 @@ resource "aws_vpc_endpoint" "sqs" {
   )
 }
 
+resource "aws_vpc_endpoint" "eks" {
+  count = var.enable_eks_endpoint ? 1 : 0
+
+  vpc_id              = aws_vpc.this.id
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.eks"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = aws_subnet.private[*].id
+
+  security_group_ids = [
+    aws_security_group.eks_endpoint[0].id
+  ]
+
+  tags = merge(
+    {
+      Name = "${var.vpc_name}-eks-endpoint"
+      Type = "interface"
+    },
+    var.tags
+  )
+}
+
+resource "aws_vpc_endpoint" "eks_auth" {
+  count = var.enable_eks_auth_endpoint ? 1 : 0
+
+  vpc_id              = aws_vpc.this.id
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.eks-auth"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = aws_subnet.private[*].id
+
+  security_group_ids = [
+    aws_security_group.eks_endpoint[0].id
+  ]
+
+  tags = merge(
+    {
+      Name = "${var.vpc_name}-eks-auth-endpoint"
+      Type = "interface"
+    },
+    var.tags
+  )
+}
+
 # ===================================
 # Security Groups for Endpoints
 # ===================================
@@ -296,6 +340,29 @@ resource "aws_security_group" "ecr_endpoint" {
   tags = merge(
     {
       Name = "${var.vpc_name}-ecr-endpoint"
+    },
+    var.tags
+  )
+}
+
+resource "aws_security_group" "eks_endpoint" {
+  count = var.enable_eks_endpoint || var.enable_eks_auth_endpoint ? 1 : 0
+
+  name        = "${var.vpc_name}-eks-endpoint"
+  description = "Security group for EKS and EKS Auth VPC endpoints"
+  vpc_id      = aws_vpc.this.id
+
+  ingress {
+    description = "Allow HTTPS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  tags = merge(
+    {
+      Name = "${var.vpc_name}-eks-endpoint"
     },
     var.tags
   )

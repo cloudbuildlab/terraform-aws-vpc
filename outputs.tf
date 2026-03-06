@@ -111,6 +111,8 @@ output "vpc_endpoint_dns_entries" {
     secretsmanager = try(aws_vpc_endpoint.secretsmanager[0].dns_entry, null)
     ecr_api        = try(aws_vpc_endpoint.ecr_api[0].dns_entry, null)
     ecr_dkr        = try(aws_vpc_endpoint.ecr_dkr[0].dns_entry, null)
+    eks            = try(aws_vpc_endpoint.eks[0].dns_entry, null)
+    eks_auth       = try(aws_vpc_endpoint.eks_auth[0].dns_entry, null)
     kms            = try(aws_vpc_endpoint.kms[0].dns_entry, null)
     ecs            = try(aws_vpc_endpoint.ecs[0].dns_entry, null)
   }
@@ -129,6 +131,8 @@ output "vpc_endpoint_ids" {
     secretsmanager = try(aws_vpc_endpoint.secretsmanager[0].id, null)
     ecr_api        = try(aws_vpc_endpoint.ecr_api[0].id, null)
     ecr_dkr        = try(aws_vpc_endpoint.ecr_dkr[0].id, null)
+    eks            = try(aws_vpc_endpoint.eks[0].id, null)
+    eks_auth       = try(aws_vpc_endpoint.eks_auth[0].id, null)
     kms            = try(aws_vpc_endpoint.kms[0].id, null)
     ecs            = try(aws_vpc_endpoint.ecs[0].id, null)
   }
@@ -146,6 +150,8 @@ output "vpc_endpoint_network_interface_ids" {
     secretsmanager = try(aws_vpc_endpoint.secretsmanager[0].network_interface_ids, [])
     ecr_api        = try(aws_vpc_endpoint.ecr_api[0].network_interface_ids, [])
     ecr_dkr        = try(aws_vpc_endpoint.ecr_dkr[0].network_interface_ids, [])
+    eks            = try(aws_vpc_endpoint.eks[0].network_interface_ids, [])
+    eks_auth       = try(aws_vpc_endpoint.eks_auth[0].network_interface_ids, [])
     kms            = try(aws_vpc_endpoint.kms[0].network_interface_ids, [])
     ecs            = try(aws_vpc_endpoint.ecs[0].network_interface_ids, [])
   }

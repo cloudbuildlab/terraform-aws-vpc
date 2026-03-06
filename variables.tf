@@ -204,6 +204,18 @@ variable "enable_ecs_endpoint" {
   default     = false
 }
 
+variable "enable_eks_endpoint" {
+  description = "Whether to enable the EKS API VPC interface endpoint (PrivateLink). Allows EKS API calls (e.g. DescribeCluster) from the VPC without internet. Not available in ap-southeast-5, ap-southeast-7, mx-central-1, ap-east-2."
+  type        = bool
+  default     = false
+}
+
+variable "enable_eks_auth_endpoint" {
+  description = "Whether to enable the EKS Auth VPC interface endpoint (EKS Pod Identity token exchange without internet)."
+  type        = bool
+  default     = false
+}
+
 variable "enable_nacls" {
   description = "Whether to create default Network ACLs for subnets. Set to false to manage NACLs outside the module."
   type        = bool
