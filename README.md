@@ -85,6 +85,7 @@ No modules.
 | [aws_vpc_endpoint.ecs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint.eks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint.eks_auth](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
+| [aws_vpc_endpoint.eks_capabilities](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint.kms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint.logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint.monitoring](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
@@ -112,6 +113,7 @@ No modules.
 | <a name="input_enable_ecr_dkr_endpoint"></a> [enable\_ecr\_dkr\_endpoint](#input\_enable\_ecr\_dkr\_endpoint) | Whether to enable ECR DKR VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_ecs_endpoint"></a> [enable\_ecs\_endpoint](#input\_enable\_ecs\_endpoint) | Whether to enable ECS VPC endpoint | `bool` | `false` | no |
 | <a name="input_enable_eks_auth_endpoint"></a> [enable\_eks\_auth\_endpoint](#input\_enable\_eks\_auth\_endpoint) | Whether to enable the EKS Auth VPC interface endpoint (EKS Pod Identity token exchange without internet). | `bool` | `false` | no |
+| <a name="input_enable_eks_capabilities_endpoint"></a> [enable\_eks\_capabilities\_endpoint](#input\_enable\_eks\_capabilities\_endpoint) | Whether to enable the EKS Capabilities VPC interface endpoint (EKS Capabilities API over PrivateLink). | `bool` | `false` | no |
 | <a name="input_enable_eks_endpoint"></a> [enable\_eks\_endpoint](#input\_enable\_eks\_endpoint) | Whether to enable the EKS API VPC interface endpoint (PrivateLink). Allows EKS API calls (e.g. DescribeCluster) from the VPC without internet. Not available in ap-southeast-5, ap-southeast-7, mx-central-1, ap-east-2. | `bool` | `false` | no |
 | <a name="input_enable_eks_tags"></a> [enable\_eks\_tags](#input\_enable\_eks\_tags) | Whether to add EKS-specific tags to public and private subnets | `bool` | `false` | no |
 | <a name="input_enable_interface_endpoints"></a> [enable\_interface\_endpoints](#input\_enable\_interface\_endpoints) | Whether to enable interface VPC endpoints | `bool` | `false` | no |
