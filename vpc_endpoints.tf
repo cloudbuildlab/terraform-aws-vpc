@@ -318,6 +318,28 @@ resource "aws_vpc_endpoint" "eks_auth" {
   )
 }
 
+resource "aws_vpc_endpoint" "eks_capabilities" {
+  count = var.enable_eks_capabilities_endpoint ? 1 : 0
+
+  vpc_id              = aws_vpc.this.id
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.eks-capabilities"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = aws_subnet.private[*].id
+
+  security_group_ids = [
+    aws_security_group.eks_endpoint[0].id
+  ]
+
+  tags = merge(
+    {
+      Name = "${var.vpc_name}-eks-capabilities-endpoint"
+      Type = "interface"
+    },
+    var.tags
+  )
+}
+
 # ===================================
 # Security Groups for Endpoints
 # ===================================
@@ -346,10 +368,10 @@ resource "aws_security_group" "ecr_endpoint" {
 }
 
 resource "aws_security_group" "eks_endpoint" {
-  count = var.enable_eks_endpoint || var.enable_eks_auth_endpoint ? 1 : 0
+  count = var.enable_eks_endpoint || var.enable_eks_auth_endpoint || var.enable_eks_capabilities_endpoint ? 1 : 0
 
   name        = "${var.vpc_name}-eks-endpoint"
-  description = "Security group for EKS and EKS Auth VPC endpoints"
+  description = "Security group for EKS, EKS Auth, and EKS Capabilities VPC endpoints"
   vpc_id      = aws_vpc.this.id
 
   ingress {
