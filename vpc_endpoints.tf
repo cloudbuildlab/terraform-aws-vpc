@@ -382,6 +382,17 @@ resource "aws_security_group" "eks_endpoint" {
     cidr_blocks = [var.vpc_cidr]
   }
 
+  dynamic "ingress" {
+    for_each = length(var.eks_endpoint_allowed_cidrs) > 0 ? [1] : []
+    content {
+      description = "HTTPS from allowed CIDRs (e.g. Route 53 Resolver / on-prem)"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = var.eks_endpoint_allowed_cidrs
+    }
+  }
+
   tags = merge(
     {
       Name = "${var.vpc_name}-eks-endpoint"
