@@ -222,6 +222,12 @@ variable "enable_eks_capabilities_endpoint" {
   default     = false
 }
 
+variable "eks_endpoint_allowed_cidrs" {
+  description = "List of CIDR blocks allowed to reach the EKS, EKS Auth, and EKS Capabilities VPC endpoints (e.g. for Route 53 Resolver or on-prem). When non-empty, an additional ingress rule (HTTPS 443) is added to the shared EKS endpoint security group."
+  type        = list(string)
+  default     = []
+}
+
 variable "enable_nacls" {
   description = "Whether to create default Network ACLs for subnets. Set to false to manage NACLs outside the module."
   type        = bool
