@@ -119,7 +119,7 @@ resource "aws_network_acl_rule" "public_egress_all" {
 }
 
 resource "aws_network_acl_rule" "public_ingress_ipv6_vpc" {
-  count = var.enable_nacls && length(var.public_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.public_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.public[0].id
   rule_number     = 300
@@ -131,7 +131,7 @@ resource "aws_network_acl_rule" "public_ingress_ipv6_vpc" {
 }
 
 resource "aws_network_acl_rule" "public_ingress_ipv6_all" {
-  count = var.enable_nacls && length(var.public_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.public_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.public[0].id
   rule_number     = 400
@@ -143,7 +143,7 @@ resource "aws_network_acl_rule" "public_ingress_ipv6_all" {
 }
 
 resource "aws_network_acl_rule" "public_egress_ipv6_all" {
-  count = var.enable_nacls && length(var.public_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.public_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.public[0].id
   rule_number     = 200
@@ -209,7 +209,7 @@ resource "aws_network_acl_rule" "private_egress_all" {
 }
 
 resource "aws_network_acl_rule" "private_ingress_ipv6_vpc" {
-  count = var.enable_nacls && length(var.private_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.private_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.private[0].id
   rule_number     = 300
@@ -221,7 +221,7 @@ resource "aws_network_acl_rule" "private_ingress_ipv6_vpc" {
 }
 
 resource "aws_network_acl_rule" "private_ingress_ipv6_all" {
-  count = var.enable_nacls && length(var.private_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.private_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.private[0].id
   rule_number     = 400
@@ -233,7 +233,7 @@ resource "aws_network_acl_rule" "private_ingress_ipv6_all" {
 }
 
 resource "aws_network_acl_rule" "private_egress_ipv6_all" {
-  count = var.enable_nacls && length(var.private_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.private_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.private[0].id
   rule_number     = 200
@@ -275,7 +275,7 @@ resource "aws_network_acl_rule" "isolated_egress_vpc" {
 }
 
 resource "aws_network_acl_rule" "isolated_ingress_ipv6_vpc" {
-  count = var.enable_nacls && length(var.isolated_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.isolated_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.isolated[0].id
   rule_number     = 200
@@ -287,7 +287,7 @@ resource "aws_network_acl_rule" "isolated_ingress_ipv6_vpc" {
 }
 
 resource "aws_network_acl_rule" "isolated_egress_ipv6_vpc" {
-  count = var.enable_nacls && length(var.isolated_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.isolated_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.isolated[0].id
   rule_number     = 200
@@ -354,7 +354,7 @@ resource "aws_network_acl_rule" "database_egress_all" {
 }
 
 resource "aws_network_acl_rule" "database_ingress_ipv6_vpc" {
-  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.database[0].id
   rule_number     = 200
@@ -366,7 +366,7 @@ resource "aws_network_acl_rule" "database_ingress_ipv6_vpc" {
 }
 
 resource "aws_network_acl_rule" "database_ingress_ipv6_all" {
-  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.database[0].id
   rule_number     = 250
@@ -378,7 +378,7 @@ resource "aws_network_acl_rule" "database_ingress_ipv6_all" {
 }
 
 resource "aws_network_acl_rule" "database_egress_ipv6_vpc" {
-  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.database[0].id
   rule_number     = 200
@@ -391,7 +391,7 @@ resource "aws_network_acl_rule" "database_egress_ipv6_vpc" {
 }
 
 resource "aws_network_acl_rule" "database_egress_ipv6_all" {
-  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && var.assign_generated_ipv6_cidr_block ? 1 : 0
+  count = var.enable_nacls && length(var.database_subnet_cidrs) > 0 && local.enable_ipv6_networking ? 1 : 0
 
   network_acl_id  = aws_network_acl.database[0].id
   rule_number     = 250

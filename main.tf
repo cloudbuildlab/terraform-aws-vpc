@@ -22,6 +22,9 @@ locals {
   ipv6_prefix_offset_private  = length(var.public_subnet_cidrs)
   ipv6_prefix_offset_isolated = length(var.public_subnet_cidrs) + length(var.private_subnet_cidrs)
   ipv6_prefix_offset_database = length(var.public_subnet_cidrs) + length(var.private_subnet_cidrs) + length(var.isolated_subnet_cidrs)
+
+  # Dual-stack networking (subnets/EIGW/routes/NACLs) is optional even when the VPC has IPv6
+  enable_ipv6_networking = coalesce(var.enable_ipv6_networking, var.assign_generated_ipv6_cidr_block)
 }
 
 # ===================================
@@ -35,7 +38,7 @@ resource "aws_vpc" "this" {
   # Instance tenancy - dedicated for compliance requirements, default for cost efficiency
   instance_tenancy = var.instance_tenancy
 
-  # IPv6 configuration (applied at create; later flips are ignored — see lifecycle)
+  # IPv6 configuration (VPC CIDR only; subnet/EIGW/routes use enable_ipv6_networking)
   assign_generated_ipv6_cidr_block = var.assign_generated_ipv6_cidr_block
 
   # Additional DNS settings
@@ -47,16 +50,6 @@ resource "aws_vpc" "this" {
     },
     var.tags
   )
-
-  # Keep existing AWS-assigned IPv6 CIDRs as-is when config later sets
-  # assign_generated_ipv6_cidr_block=false (or omits it). Avoids stripping
-  # dual-stack VPC CIDRs without also managing subnet IPv6 / EIGW.
-  # To intentionally change IPv6 assignment, use AWS CLI/console or -replace.
-  lifecycle {
-    ignore_changes = [
-      assign_generated_ipv6_cidr_block,
-    ]
-  }
 }
 
 
@@ -126,8 +119,8 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   # IPv6 configuration
-  ipv6_cidr_block                 = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_public + count.index) : null
-  assign_ipv6_address_on_creation = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? true : false
+  ipv6_cidr_block                 = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_public + count.index) : null
+  assign_ipv6_address_on_creation = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? true : false
 
   tags = merge(
     {
@@ -169,7 +162,7 @@ resource "aws_route_table" "public" {
   }
 
   dynamic "route" {
-    for_each = var.assign_generated_ipv6_cidr_block && var.create_igw && !try(var.custom_routes.public.use_only, false) && length(var.public_subnet_cidrs) > 0 ? [1] : []
+    for_each = local.enable_ipv6_networking && var.create_igw && !try(var.custom_routes.public.use_only, false) && length(var.public_subnet_cidrs) > 0 ? [1] : []
     content {
       ipv6_cidr_block = "::/0"
       gateway_id      = aws_internet_gateway.this[0].id
@@ -204,8 +197,8 @@ resource "aws_subnet" "private" {
   availability_zone = var.availability_zones[count.index]
 
   # IPv6 configuration
-  ipv6_cidr_block                 = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_private + count.index) : null
-  assign_ipv6_address_on_creation = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? true : false
+  ipv6_cidr_block                 = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_private + count.index) : null
+  assign_ipv6_address_on_creation = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? true : false
 
   tags = merge(
     {
@@ -246,7 +239,7 @@ resource "aws_route_table" "private" {
   }
 
   dynamic "route" {
-    for_each = var.assign_generated_ipv6_cidr_block && var.enable_route_tables && length(var.private_subnet_cidrs) > 0 ? [1] : []
+    for_each = local.enable_ipv6_networking && var.enable_route_tables && length(var.private_subnet_cidrs) > 0 ? [1] : []
     content {
       ipv6_cidr_block        = "::/0"
       egress_only_gateway_id = aws_egress_only_internet_gateway.this[0].id
@@ -281,8 +274,8 @@ resource "aws_subnet" "isolated" {
   availability_zone = var.availability_zones[count.index]
 
   # IPv6 configuration
-  ipv6_cidr_block                 = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_isolated + count.index) : null
-  assign_ipv6_address_on_creation = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? true : false
+  ipv6_cidr_block                 = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_isolated + count.index) : null
+  assign_ipv6_address_on_creation = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? true : false
 
   tags = merge(
     {
@@ -341,8 +334,8 @@ resource "aws_subnet" "database" {
   availability_zone = var.availability_zones[count.index]
 
   # IPv6 configuration
-  ipv6_cidr_block                 = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_database + count.index) : null
-  assign_ipv6_address_on_creation = var.assign_generated_ipv6_cidr_block && aws_vpc.this.ipv6_cidr_block != null ? true : false
+  ipv6_cidr_block                 = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, local.ipv6_prefix_offset_database + count.index) : null
+  assign_ipv6_address_on_creation = local.enable_ipv6_networking && aws_vpc.this.ipv6_cidr_block != null ? true : false
 
   tags = merge(
     {
@@ -394,7 +387,7 @@ resource "aws_route_table_association" "database" {
 # Egress-Only Internet Gateway (for IPv6)
 # ===================================
 resource "aws_egress_only_internet_gateway" "this" {
-  count  = var.assign_generated_ipv6_cidr_block && length(var.private_subnet_cidrs) > 0 ? 1 : 0
+  count  = local.enable_ipv6_networking && length(var.private_subnet_cidrs) > 0 ? 1 : 0
   vpc_id = aws_vpc.this.id
 
   tags = merge(

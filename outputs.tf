@@ -25,7 +25,7 @@ output "internet_gateway_id" {
 
 output "egress_only_internet_gateway_id" {
   description = "The ID of the Egress-Only Internet Gateway (for IPv6)"
-  value       = var.assign_generated_ipv6_cidr_block ? try(aws_egress_only_internet_gateway.this[0].id, null) : null
+  value       = local.enable_ipv6_networking ? try(aws_egress_only_internet_gateway.this[0].id, null) : null
 }
 
 output "isolated_route_table_ids" {
@@ -172,20 +172,20 @@ output "vpc_ipv6_cidr" {
 
 output "public_subnet_ipv6_cidrs" {
   description = "List of IPv6 CIDR blocks for public subnets"
-  value       = var.assign_generated_ipv6_cidr_block ? [for subnet in aws_subnet.public : subnet.ipv6_cidr_block] : []
+  value       = local.enable_ipv6_networking ? [for subnet in aws_subnet.public : subnet.ipv6_cidr_block] : []
 }
 
 output "private_subnet_ipv6_cidrs" {
   description = "List of IPv6 CIDR blocks for private subnets"
-  value       = var.assign_generated_ipv6_cidr_block ? [for subnet in aws_subnet.private : subnet.ipv6_cidr_block] : []
+  value       = local.enable_ipv6_networking ? [for subnet in aws_subnet.private : subnet.ipv6_cidr_block] : []
 }
 
 output "isolated_subnet_ipv6_cidrs" {
   description = "List of IPv6 CIDR blocks for isolated subnets"
-  value       = var.assign_generated_ipv6_cidr_block ? [for subnet in aws_subnet.isolated : subnet.ipv6_cidr_block] : []
+  value       = local.enable_ipv6_networking ? [for subnet in aws_subnet.isolated : subnet.ipv6_cidr_block] : []
 }
 
 output "database_subnet_ipv6_cidrs" {
   description = "List of IPv6 CIDR blocks for database subnets"
-  value       = var.assign_generated_ipv6_cidr_block ? [for subnet in aws_subnet.database : subnet.ipv6_cidr_block] : []
+  value       = local.enable_ipv6_networking ? [for subnet in aws_subnet.database : subnet.ipv6_cidr_block] : []
 }

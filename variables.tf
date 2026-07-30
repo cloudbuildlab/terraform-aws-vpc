@@ -35,9 +35,16 @@ variable "instance_tenancy" {
 }
 
 variable "assign_generated_ipv6_cidr_block" {
-  description = "Whether to assign AWS-generated IPv6 CIDR block to VPC and subnets at create time. Later changes are ignored on aws_vpc (lifecycle) so existing IPv6 CIDRs are not stripped; set true at create (or use -replace/CLI) to enable dual-stack."
+  description = "Whether to assign an AWS-generated IPv6 CIDR block to the VPC."
   type        = bool
   default     = false
+}
+
+variable "enable_ipv6_networking" {
+  description = "Enable IPv6 on subnets (CIDRs + assign_ipv6_address_on_creation), egress-only IGW, IPv6 routes, and IPv6 NACL rules. Defaults to assign_generated_ipv6_cidr_block for backward compatibility. Set false to keep a VPC IPv6 CIDR without enabling dual-stack networking."
+  type        = bool
+  default     = null
+  nullable    = true
 }
 
 variable "enable_dns_hostnames" {
