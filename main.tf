@@ -35,7 +35,7 @@ resource "aws_vpc" "this" {
   # Instance tenancy - dedicated for compliance requirements, default for cost efficiency
   instance_tenancy = var.instance_tenancy
 
-  # IPv6 configuration
+  # IPv6 configuration (applied at create; later flips are ignored — see lifecycle)
   assign_generated_ipv6_cidr_block = var.assign_generated_ipv6_cidr_block
 
   # Additional DNS settings
@@ -47,6 +47,19 @@ resource "aws_vpc" "this" {
     },
     var.tags
   )
+
+  # Keep existing AWS-assigned IPv6 CIDRs as-is when config later sets
+  # assign_generated_ipv6_cidr_block=false (or omits it). Avoids stripping
+  # dual-stack VPC CIDRs without also managing subnet IPv6 / EIGW.
+  # To intentionally change IPv6 assignment, use AWS CLI/console or -replace.
+  lifecycle {
+    ignore_changes = [
+      assign_generated_ipv6_cidr_block,
+      ipv6_association_id,
+      ipv6_cidr_block,
+      ipv6_cidr_block_network_border_group,
+    ]
+  }
 }
 
 

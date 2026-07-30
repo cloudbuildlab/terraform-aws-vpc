@@ -35,7 +35,7 @@ variable "instance_tenancy" {
 }
 
 variable "assign_generated_ipv6_cidr_block" {
-  description = "Whether to assign AWS-generated IPv6 CIDR block to VPC and subnets. Note: Changing from true to false requires manually removing IPv6 CIDR blocks from all subnets first before applying."
+  description = "Whether to assign AWS-generated IPv6 CIDR block to VPC and subnets at create time. Later changes are ignored on aws_vpc (lifecycle) so existing IPv6 CIDRs are not stripped; set true at create (or use -replace/CLI) to enable dual-stack."
   type        = bool
   default     = false
 }
