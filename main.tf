@@ -55,9 +55,6 @@ resource "aws_vpc" "this" {
   lifecycle {
     ignore_changes = [
       assign_generated_ipv6_cidr_block,
-      ipv6_association_id,
-      ipv6_cidr_block,
-      ipv6_cidr_block_network_border_group,
     ]
   }
 }
